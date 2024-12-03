@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APRS Passcode</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 1.5rem;
+            font-size: 1.75rem;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #4299e1;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #3182ce;
+        }
+        #passcodeResult {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Générateur de Passcode APRS</h1>
+        <div class="input-group">
+            <label for="callsign">Indicatif</label>
+            <input type="text" id="callsign" name="callsign" autocapitalize="characters">
+        </div>
+        <button onclick="aprspass()">Générer Passcode</button>
+        <div id="passcodeResult"></div>
+    </div>
+    <script>
+        function aprspass() {
+            var callsign = document.getElementById('callsign').value;
+            var stophere = callsign.indexOf('-');
+            if (stophere !== -1) callsign = callsign.substring(0, stophere);
+            var realcall = callsign.toUpperCase().substring(0, 10);
+            var hash = 0x73e2;
+            var i = 0;
+            var len = realcall.length;
+            while (i < len) {
+                hash ^= realcall.charCodeAt(i) << 8;
+                if (i + 1 < len) {
+                    hash ^= realcall.charCodeAt(i + 1);
+                }
+                i += 2;
+            }
+            var passcode = hash & 0x7fff;
+            document.getElementById('passcodeResult').innerText = "Passcode APRS : " + passcode;
+        }
+    </script>
+</body>
+</html>
